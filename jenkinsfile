@@ -1,0 +1,47 @@
+Jenkins pipeline
+
+pipeline {
+    agent any
+
+    environment {
+        AWS_REGION = 'us-east-1'
+        ECR_URL = '539935451710.dkr.ecr.us-east-1.amazonaws.com/nginx-web-app'
+        LAMBDA_FUNCTION = 'my_lambda_container'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git 'https://github.com/Moulahusaingvt/HCL-bayer-s_Project.git'
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                sh 'terraform init'
+                sh 'terraform plan'
+                sh 'terraform apply -auto-approve'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t my_lambda_image .'
+                sh 'docker tag my_lambda_image:latest $ECR_URL/my_lambda_image:latest'
+            }
+        }
+
+        stage('Push to ECR') {
+            steps {
+                sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URL'
+                sh 'docker push $ECR_URL/my_lambda_image:latest'
+            }
+        }
+
+        stage('Update AWS Lambda') {
+            steps {
+                sh 'aws lambda update-function-code --function-name $LAMBDA_FUNCTION --image-uri $ECR_URL/my_lambda_image:latest'
+            }
+        }
+    }
+}
