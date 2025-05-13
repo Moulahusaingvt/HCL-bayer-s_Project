@@ -1,10 +1,20 @@
-FROM public.ecr.aws/lambda/python:3.9
+# Use an official Node.js runtime as a base image
+FROM node:18
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
 
 # Install dependencies
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN npm install
 
-# Copy application code
-COPY app/ /var/task/
+# Copy the application source code
+COPY . .
 
-CMD ["app.lambda_handler"]
+# Expose the port your app runs on
+EXPOSE 3000
+
+# Define the command to run the application
+CMD ["node", "server.js"]
