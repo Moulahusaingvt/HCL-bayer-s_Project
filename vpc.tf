@@ -13,7 +13,7 @@ resource "aws_subnet" "public_subnet" {
 }
 
 resource "aws_security_group" "hcl_sg" {
-  vpc_id = aws_vpc.my_vpc.id
+  vpc_id = aws_vpc.hcl_vpc.id
   ingress {
     from_port   = 0
     to_port     = 65535
