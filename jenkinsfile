@@ -6,7 +6,7 @@ pipeline {
     environment {
         AWS_REGION = 'us-east-1'
         ECR_URL = '539935451710.dkr.ecr.us-east-1.amazonaws.com/nginx-web-app'
-        LAMBDA_FUNCTION = 'my_lambda_container'
+
     }
 
     stages {
